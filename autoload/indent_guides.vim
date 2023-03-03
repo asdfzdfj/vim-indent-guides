@@ -253,8 +253,16 @@ endfunction
 " Returns: 'Normal xxx guifg=#323232 guibg=#ffffff'
 "
 function! indent_guides#capture_highlight(group_name) abort
-  let l:output = execute('hi ' . a:group_name, 'silent')
-  let l:output = substitute(l:output, '\n', '', '')
+  " extremely shoddy shim to fake :hi output but without using execute()
+  " as it upsets (neo)vim sandbox when plugin got triggered from modeline
+  " (indent_guides#process_autocmds()) and OptionSet autocmds
+  let l:output = a:group_name.' xxx'
+
+  let l:guibg = synIDattr(synIDtrans(hlID(a:group_name)), 'bg#', 'gui')
+  if l:guibg !=# ''
+    let l:output = l:output.' guibg='.l:guibg
+  endif
+
   return l:output
 endfunction
 
