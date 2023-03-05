@@ -128,14 +128,8 @@ function! indent_guides#gui_highlight_colors() abort
   let l:hi_normal_guibg = ''
 
   " capture the backgroud color from the normal highlight
-  if s:hi_normal =~ s:color_hex_bg_pat
-    " hex color code is being used, eg. '#FFFFFF'
-    let l:hi_normal_guibg = matchstr(s:hi_normal, s:color_hex_bg_pat)
-
-  elseif s:hi_normal =~ s:color_name_bg_pat
-    " color name is being used, eg. 'white'
-    let l:color_name = matchstr(s:hi_normal, s:color_name_bg_pat)
-    let l:hi_normal_guibg = color_helper#color_name_to_hex(l:color_name)
+  if s:hi_normal !=# ''
+    let l:hi_normal_guibg = s:hi_normal
 
   else
     " background color could not be detected, default to basic colors
@@ -195,10 +189,7 @@ function! indent_guides#init_script_vars() abort
     let s:indent_size = &l:tabstop
   endif
   let s:guide_size  = indent_guides#calculate_guide_size()
-  let s:hi_normal   = indent_guides#capture_highlight('Normal')
-
-  " remove 'font=<value>' from the s:hi_normal string (only seems to happen on Vim startup in Windows)
-  let s:hi_normal = substitute(s:hi_normal, ' font=[A-Za-z0-9:]\+', '', '')
+  let s:hi_normal   = synIDattr(synIDtrans(hlID('Normal')), 'bg#', 'gui')
 
   " shortcuts to the global variables - this makes the code easier to read
   let s:debug             = g:indent_guides_debug
